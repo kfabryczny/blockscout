@@ -76,4 +76,29 @@ defmodule Explorer.Chain.Address.TokenBalanceTest do
       assert result.block_number == token_balance.block_number
     end
   end
+
+  describe "tokens_grouped_by_number_of_holders/0" do
+    test "groups all tokens with their number of holders" do
+      token_a = insert(:token)
+      address_a = insert(:address, hash: "0xc45e4830dff873cf8b70de2b194d0ddd06ef651d")
+
+      insert(:token_balance, address: address_a, value: 10, token_contract_address_hash: token_a.contract_address_hash)
+
+      token_b = insert(:token)
+      address_b = insert(:address, hash: "0xc45e4830dff873cf8b70de2b194d0ddd06ef651e")
+      address_c = insert(:address, hash: "0xc45e4830dff873cf8b70de2b194d0ddd06ef651f")
+
+      insert(:token_balance, address: address_b, value: 10, token_contract_address_hash: token_b.contract_address_hash)
+      insert(:token_balance, address: address_c, value: 10, token_contract_address_hash: token_b.contract_address_hash)
+
+      result =
+        TokenBalance.tokens_grouped_by_number_of_holders()
+        |> Repo.all()
+        |> Enum.sort(fn {_token_hash_a, holders_a}, {_token_hash_b, holders_b} -> holders_a < holders_b end)
+
+      assert [{token_a_result, 1}, {token_b_result, 2}] = result
+      assert token_a_result == token_a.contract_address_hash
+      assert token_b_result == token_b.contract_address_hash
+    end
+  end
 end
