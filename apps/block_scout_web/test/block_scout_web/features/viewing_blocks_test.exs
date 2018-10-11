@@ -204,11 +204,11 @@ defmodule BlockScoutWeb.ViewingBlocksTest do
       session: session
     } do
       indexed_blocks = newest_block.number - oldest_block.number + 1
-      percentage = indexed_blocks / newest_block.number * 100
+      ratio = indexed_blocks / newest_block.number
 
       session
       |> BlockListPage.visit_page()
-      |> BlockListPage.loading_percentage(percentage)
+      |> assert_has(BlockListPage.indexed_ratio(ratio))
     end
   end
 end
