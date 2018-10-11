@@ -27,9 +27,9 @@ defmodule Explorer.Counters.TokenHoldersCounter do
   def init(args) do
     create_table()
 
-    Task.start_link(&consolidate/0)
+    # Task.start_link(&consolidate/0)
 
-    schedule_next_consolidation()
+    # schedule_next_consolidation()
 
     {:ok, args}
   end
